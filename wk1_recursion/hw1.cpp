@@ -82,6 +82,66 @@ public:
             return head;
         }
     }
+    // Leetcode 698 Partition to K Equal Sum Subsets
+    bool backtrack(vector <int> nums, vector<bool>& visited, int curr_sum, int index, int target_sum, int k)
+    {
+        if(k == 0)
+            return true;
+        if (curr_sum > target_sum)
+            return false;
+        if (curr_sum == target_sum)
+            return backtrack(nums, visited, 0, 0, target_sum, k - 1);
+        for(int i = index; i<nums.size(); ++i)
+        {
+            if(visited[i])
+                continue;
+            visited[i] = true;
+            if(backtrack(nums, visited, curr_sum + nums[i], i + 1, target_sum, k))
+                return true;
+            visited[i] = false;
+            if(curr_sum == 0)
+                break;
+        }
+        return false;
+    }
+
+    bool canPartitionKSubsets(vector<int>& nums, int k) {
+        int n = nums.size();
+        if (k > n)
+            return false;
+        int sum = 0;
+        for (auto x : nums)
+            sum += x;
+        if(sum % k != 0)
+            return false;
+        int target_sum = sum / k;
+        vector<bool> visited(n, false);
+        sort(nums.begin(), nums.end(), greater<int>());
+        return backtrack(nums, visited, 0, 0, target_sum, k);
+    }
+    // Leetcode 761 Special Binary String
+        string makeLargestSpecial(string s) {
+        vector <string> specials;
+        int count = 0;
+        for(int i = 0, j = 0; j < s.length(); ++j)
+        {
+            if(s[j] == '1')
+                count += 1;
+            else
+                count -= 1;
+            if(count == 0)
+            {
+                const string& inner = s.substr(i + 1, j - i - 1);
+                specials.push_back('1' + makeLargestSpecial(inner) + '0');
+                i = j + 1;
+            }
+        }
+        sort(begin(specials), end(specials), greater<>());
+        string joined;
+        for (const string& special : specials)
+            joined += special;
+        return joined;
+    }
     // Leetcode 794 Valid Tic-Tac-Toe State
     bool isWin(vector<string>& board, char player)
     {
